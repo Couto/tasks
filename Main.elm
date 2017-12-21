@@ -1,14 +1,12 @@
 module Main exposing (..)
 
+import Html
 import Css exposing (..)
 import Css.Colors exposing (..)
-import Html exposing (programWithFlags)
 import Json.Decode as Decode
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (on)
 import Html.Styled.Attributes exposing (css, attribute)
-import Uuid exposing (Uuid, uuidGenerator)
-import Random.Pcg exposing (Seed, initialSeed, step)
 
 
 type TaskStatus
@@ -18,14 +16,14 @@ type TaskStatus
 
 
 type alias Task =
-    { id : Uuid
+    { id : Int
     , title : String
     , status : TaskStatus
     }
 
 
 type alias Model =
-    { currentSeed : Seed
+    { currentId : Int
     , tasks : List Task
     , dragging : Maybe Task
     }
@@ -40,7 +38,15 @@ switchBoard : TaskStatus -> List Task -> Maybe Task -> List Task
 switchBoard newStatus tasks desiredTask =
     List.map
         (\task ->
-            task
+            case desiredTask of
+                Just dtask ->
+                    if task.id == dtask.id then
+                        { dtask | status = newStatus }
+                    else
+                        task
+
+                _ ->
+                    task
         )
         tasks
 
@@ -59,6 +65,7 @@ update msg model =
                 }
 
 
+board : List (Attribute msg) -> List (Html msg) -> Html msg
 board =
     styled div
         [ displayFlex
@@ -67,6 +74,7 @@ board =
         ]
 
 
+column : List (Attribute msg) -> List (Html msg) -> Html msg
 column =
     styled ul
         [ flex (int 1)
@@ -154,25 +162,22 @@ onDrop msg =
     on "drop" (Decode.succeed msg)
 
 
-createUuid currentSeed =
-    let
-        ( uuid, seed ) =
-            step Uuid.uuidGenerator currentSeed
-    in
-        uuid
-
-
+model : Model
 model =
-    { currentSeed = initialSeed 1
-    , tasks = []
+    { currentId = 0
+    , tasks =
+        [ Task 1 "Hello World 1" Backlog
+        , Task 2 "Hello World 2" InProgress
+        , Task 3 "Hello World 3" Done
+        ]
     , dragging = Nothing
     }
 
 
+main : Program Never Model Msg
 main =
-    programWithFlags
-        { init = ( model, Cmd.none )
+    Html.beginnerProgram
+        { model = model
         , update = update
         , view = view >> toUnstyled
-        , subscriptions = \_ -> Sub.none
         }
