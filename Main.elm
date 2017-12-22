@@ -32,6 +32,7 @@ type alias Model =
 type Msg
     = Drag Task
     | Drop TaskStatus
+    | CreateTask String
 
 
 switchBoard : TaskStatus -> List Task -> Maybe Task -> List Task
@@ -63,6 +64,12 @@ update msg model =
                     | dragging = Nothing
                     , tasks = switchBoard taskStatus model.tasks model.dragging
                 }
+
+        CreateTask title ->
+            { model
+                | currentId = model.currentId + 1
+                , tasks = Task model.currentId title Backlog :: model.tasks
+            }
 
 
 board : List (Attribute msg) -> List (Html msg) -> Html msg
