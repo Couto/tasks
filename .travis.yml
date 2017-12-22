@@ -30,7 +30,7 @@ install:
 
 script: 
   - elm package install --yes
-  - elm make --yes --warn --debug Main.elm
+  - elm make --yes --warn --debug src/Main.elm
 
 deploy:
   provider: pages
