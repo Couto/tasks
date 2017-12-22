@@ -58,7 +58,7 @@ model =
 type Msg
     = Drag Task
     | Drop TaskStatus
-    | CreateTask
+    | Create
     | InputChange String
 
 
@@ -77,10 +77,14 @@ update msg model =
         InputChange title ->
             { model | currentTask = title }
 
-        CreateTask ->
+        Create ->
             { model
                 | currentId = model.currentId + 1
-                , tasks = Task model.currentId model.currentTask Backlog :: model.tasks
+                , tasks =
+                    if String.length model.currentTask > 0 then
+                        Task model.currentId model.currentTask Backlog :: model.tasks
+                    else
+                        model.tasks
                 , currentTask = ""
             }
 
@@ -121,18 +125,20 @@ view model =
         doneTasks =
             filterTasks Done model.tasks
     in
-        formBoard [ onSubmit CreateTask ]
-            [ inputTask
-                [ onInput InputChange
-                , value model.currentTask
-                , placeholder "Create a task"
+        div []
+            [ formBoard [ onSubmit Create ]
+                [ inputTask
+                    [ onInput InputChange
+                    , value model.currentTask
+                    , placeholder "Create a task"
+                    ]
+                    []
+                , input [ type_ "button" ] [ text "Create Task" ]
                 ]
-                []
-            , input [ type_ "button" ] [ text "Create Task" ]
             , board []
-                [ columnView "backlog" Backlog (List.map taskView backlogTasks)
-                , columnView "in progress" InProgress (List.map taskView inProgressTasks)
-                , columnView "done" Done (List.map taskView doneTasks)
+                [ columnView Backlog (List.map taskView backlogTasks)
+                , columnView InProgress (List.map taskView inProgressTasks)
+                , columnView Done (List.map taskView doneTasks)
                 ]
             ]
 
@@ -144,28 +150,18 @@ taskView taskModel =
         , attribute "draggable" "true"
         , onDragStart <| Drag taskModel
         ]
-        [ h3 []
-            [ taskModel
-                |> .title
-                |> text
-            ]
-        ]
+        [ p [] [ text taskModel.title ] ]
 
 
-columnView : String -> TaskStatus -> List (Html Msg) -> Html Msg
-columnView name status tasks =
+columnView : TaskStatus -> List (Html Msg) -> Html Msg
+columnView status tasks =
     column
-        [ attribute "data-column" name
-        , attribute "ondragover" "return false"
-        , onDrop <| Drop status
-        ]
-        [ header []
-            [ text name
-            , tasks
-                |> List.length
-                |> toString
-                |> text
-            ]
+        [ attribute "ondragover" "return false", onDrop <| Drop status ]
+        [ tasks
+            |> List.length
+            |> toString
+            |> text
+        , text " Task(s)"
         , taskList [] tasks
         ]
 
