@@ -1,8 +1,12 @@
-Tasks
+# Tasks
+
 ---
+
 [![Build Status](https://travis-ci.org/Couto/tasks.svg?branch=master)](https://travis-ci.org/Couto/tasks)
 
-**Tasks** is a examplary project to demostrate some Elm capabilities.
+**Tasks** is an example project to demonstrate some [Elm](https://www.elm-lang.org/) capabilities, it's
+clearly based on the [kanelm](https://github.com/huytd/kanelm) project but all
+code was done from scratch.
 
 # License
-[MIT] @ Luís Couto
+[MIT](https://couto.mit-license.org/) 

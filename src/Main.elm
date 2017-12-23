@@ -5,7 +5,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (attribute, value, type_, placeholder)
 import Html.Styled.Events exposing (on, onInput, onSubmit)
 import Json.Decode as Decode
-import Styled exposing (board, column, taskList, task, inputTask, formBoard)
+import Styled exposing (globalStyle, board, column, taskList, task, inputTask, formBoard)
 
 
 main : Program Never Model Msg
@@ -126,14 +126,15 @@ view model =
             filterTasks Done model.tasks
     in
         div []
-            [ formBoard [ onSubmit Create ]
+            [ globalStyle
+            , formBoard [ onSubmit Create ]
                 [ inputTask
                     [ onInput InputChange
                     , value model.currentTask
                     , placeholder "Create a task"
                     ]
                     []
-                , input [ type_ "button" ] [ text "Create Task" ]
+                , input [ type_ "submit" ] [ text "Create Task" ]
                 ]
             , board []
                 [ columnView Backlog (List.map taskView backlogTasks)
