@@ -28,13 +28,14 @@ install:
   - chmod +x $(npm config get prefix)/bin/elm-make
   - npm install
 
-script: 
+script:
   - elm package install --yes
-  - elm make --yes --warn --debug src/Main.elm
+  - elm make --yes --warn --debug --output dist/index.html src/Main.elm
 
 deploy:
   provider: pages
   skip_cleanup: true
-  github_token: $GITHUB_TOKEN 
+  github_token: $GITHUB_TOKEN
+  local_dir: dist
   on:
     branch: master
