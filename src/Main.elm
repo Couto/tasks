@@ -3,9 +3,9 @@ module Main exposing (..)
 import Html
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (attribute, value, type_, placeholder)
-import Html.Styled.Events exposing (on, onInput, onSubmit)
+import Html.Styled.Events exposing (on, onInput, onSubmit, onClick)
 import Json.Decode as Decode
-import Styled exposing (globalStyle, board, column, taskList, task, inputTask, formBoard)
+import Styled exposing (..)
 
 
 main : Program Never Model Msg
@@ -60,6 +60,7 @@ type Msg
     | Drop TaskStatus
     | Create
     | InputChange String
+    | Delete Task
 
 
 update : Msg -> Model -> Model
@@ -87,6 +88,9 @@ update msg model =
                         model.tasks
                 , currentTask = ""
             }
+
+        Delete task ->
+            { model | tasks = List.filter (\t -> t /= task) model.tasks }
 
 
 switchBoard : TaskStatus -> List Task -> Maybe Task -> List Task
@@ -131,10 +135,10 @@ view model =
                 [ inputTask
                     [ onInput InputChange
                     , value model.currentTask
-                    , placeholder "Create a task"
+                    , placeholder "What needs to be done?"
                     ]
                     []
-                , input [ type_ "submit" ] [ text "Create Task" ]
+                , input [ type_ "submit", value "Create Task" ] []
                 ]
             , board []
                 [ columnView Backlog (List.map taskView backlogTasks)
@@ -151,7 +155,9 @@ taskView taskModel =
         , attribute "draggable" "true"
         , onDragStart <| Drag taskModel
         ]
-        [ p [] [ text taskModel.title ] ]
+        [ closeButton [ onClick (Delete taskModel) ] [ text "Delete task" ]
+        , p [] [ text taskModel.title ]
+        ]
 
 
 columnView : TaskStatus -> List (Html Msg) -> Html Msg

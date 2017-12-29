@@ -1,6 +1,6 @@
 module Styled exposing (..)
 
-import Html.Styled exposing (Html, Attribute, styled, div, form, ul, li, input)
+import Html.Styled exposing (Html, Attribute, styled, div, form, ul, li, input, button)
 import Css exposing (..)
 import Css.Colors exposing (..)
 import Css.Foreign exposing (global, body)
@@ -18,7 +18,9 @@ globalStyle : Html msg
 globalStyle =
     global
         [ body
-            [ backgroundColor (rgb 245 244 252) ]
+            [ backgroundColor (rgb 245 244 252)
+            , margin (Css.rem 0.5)
+            ]
         ]
 
 
@@ -27,6 +29,7 @@ typography =
     Css.batch
         [ fontFamilies [ "Lucida Grande", "Helvetica Neue", "sans-serif" ]
         , fontSize (px 14)
+        , lineHeight (em 1.5)
         , fontWeight normal
         , color colors.text
         ]
@@ -37,13 +40,14 @@ board =
     styled div
         [ typography
         , displayFlex
+        , margin (Css.rem 0.5)
         , height (pct 100)
         ]
 
 
 column : List (Attribute msg) -> List (Html msg) -> Html msg
 column =
-    styled ul
+    styled div
         [ flex (int 1)
         , padding (px 0)
         , borderRight3 (px 1) solid colors.border
@@ -73,12 +77,22 @@ task =
         ]
 
 
+closeButton : List (Attribute msg) -> List (Html msg) -> Html msg
+closeButton =
+    styled button []
+
+
 inputTask : List (Attribute msg) -> List (Html msg) -> Html msg
 inputTask =
     styled input
-        [ border3 (px 1) solid purple ]
+        [ flex (int 1)
+        , border3 (px 1) solid colors.border
+        , height (Css.rem 2)
+        , padding2 (Css.rem 0) (Css.rem 0.5)
+        , outline none
+        ]
 
 
 formBoard : List (Attribute msg) -> List (Html msg) -> Html msg
 formBoard =
-    styled form []
+    styled form [ displayFlex ]
